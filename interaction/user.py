@@ -21,7 +21,7 @@ trigger_word = "Hello world"
 # system asks "how can i help?"
 
 primary_cmds = ['Remember this',
-                'Take me to my item',
+                'Take me ',
                 'Read this',
                 'Look for an object',
                 'Describe the surrouding']
@@ -71,8 +71,8 @@ def callback(recognizer, audio):
 
 r = sr.Recognizer()
 m = sr.Microphone()
-# with m as source:
-    # r.adjust_for_ambient_noise(source)
+with m as source:
+    r.adjust_for_ambient_noise(source)
 
 stop_listening = r.listen_in_background(m, callback)
 
