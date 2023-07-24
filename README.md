@@ -1,4 +1,3 @@
-# TODO
 # eyeQ - Your Visionary Assistant
 
 
