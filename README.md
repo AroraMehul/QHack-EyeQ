@@ -1,4 +1,4 @@
-# eyeQ - Your Visionary Assistant
+# EyeQ - Your Visionary Assistant
 
 
 eyeQ is an innovative device that aims to empower visually impaired individuals with a comprehensive set of functionalities, enabling them to navigate their surroundings independently and access information effortlessly. Leveraging the power of the Oak-D camera, eyeQ utilizes cutting-edge hardware and software capabilities, including the IMU and depth cameras, to provide an enhanced and inclusive user experience.
