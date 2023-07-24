@@ -7,21 +7,15 @@ import numpy as np
 import depthai as dai
 import east
 import blobconverter
+import pyttsx3
 import threading
 
-# def get_user_input():
-#     global recognize_text
-#     while True:
-#         user_input = input("Enter 'read' to recognize text: ")
-#         if user_input.lower() == 'read':
-#             recognize_text = True
-#         else:
-#             recognize_text = False
+# Initialize the TTS engine
+engine = pyttsx3.init()
 
-# Start the thread for user input
-# user_input_thread = threading.Thread(target=get_user_input)
-# user_input_thread.daemon = True
-# user_input_thread.start()
+# Set properties (optional)
+engine.setProperty('rate', 150)  # Speed of speech
+engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
 
 class HostSeqSync:
     def __init__(self):
@@ -175,7 +169,6 @@ with dai.Device(pipeline) as device:
     ctrl.setAutoFocusMode(dai.CameraControl.AutoFocusMode.CONTINUOUS_VIDEO)
     ctrl.setAutoFocusTrigger()
     controlQueue.send(ctrl)
-    # print("Enter 'read' to recognize text:")
 
     while True:
         vid_in = q_vid.tryGet()
@@ -185,18 +178,17 @@ with dai.Device(pipeline) as device:
         # Multiple recognition results may be available, read until queue is empty
         while True:
             in_rec = q_rec.tryGet()
-            # user_input = input()
             if in_rec is None:
                 break
             rec_data = bboxes = np.array(in_rec.getFirstLayerFp16()).reshape(30,1,37)
             decoded_text = codec.decode(rec_data)[0]
             pos = rotated_rectangles[rec_received]
-            # print("{:2}: {:20}".format(rec_received, decoded_text),
-            #     "center({:3},{:3}) size({:3},{:3}) angle{:5.1f} deg".format(
-            #         int(pos[0][0]), int(pos[0][1]), pos[1][0], pos[1][1], pos[2]))
-            # user_input = input()
-            # if recognize_text:
-            print(decoded_text)
+            # Speak the text
+            engine.say(decoded_text)
+            
+            # Wait for the speech to finish
+            engine.runAndWait()
+
             # Draw the text on the right side of 'cropped_stacked' - placeholder
             if cropped_stacked is not None:
                 cv2.putText(cropped_stacked, decoded_text,
@@ -227,8 +219,6 @@ with dai.Device(pipeline) as device:
 
                 rec_received = 0
                 rec_pushed = len(rotated_rectangles)
-                # if rec_pushed:
-                    # print("====== Pushing for recognition, count:", rec_pushed)
                 cropped_stacked = None
                 for idx, rotated_rect in enumerate(rotated_rectangles):
                     # Detections are done on 256x256 frames, we are sending back 1024x1024
@@ -243,7 +233,6 @@ with dai.Device(pipeline) as device:
                     # print(rotated_rect)
                     cv2.polylines(frame, [points], isClosed=True, color=(255, 0, 0), thickness=1, lineType=cv2.LINE_8)
 
-                    # TODO make it work taking args like in OpenCV:
                     # rr = ((256, 256), (128, 64), 30)
                     rr = dai.RotatedRect()
                     rr.center.x    = rotated_rect[0][0]

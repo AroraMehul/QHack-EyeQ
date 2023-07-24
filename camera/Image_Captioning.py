@@ -4,24 +4,26 @@ import base64
 import time
 from pathlib import Path
 import depthai as dai
-# from transformers import AutoModelForImageCaptioning, AutoTokenizer
+from transformers import AutoModelForImageCaptioning, AutoTokenizer
 import torch
-import torchvision
+import torchvision.transforms as transforms
 from PIL import Image
+import torchtext
+import torchvision.models as models
+from transformers import HubModel, HubTokenizer
+import pyttsx3
 
-model = torchvision.models.detection.captioning_showtell(pretrained=True)
+# Initialize the TTS engine
+engine = pyttsx3.init()
 
-# def get_image_caption(image_data):
-#     api_url = "https://captionbot.azurewebsites.net/api/messages"
-#     headers = {"Content-Type": "application/octet-stream"}
+# Set properties (optional)
+engine.setProperty('rate', 150)  # Speed of speech
+engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
 
-#     response = requests.post(api_url, data=image_data, headers=headers)
-#     if response.status_code == 200:
-#         caption = response.json()["created"]
-#         return caption
-#     else:
-#         print("Error: Unable to get image caption.")
-#         return None
+# Load the image captioning model
+model_name = "blip-image-captioning-base"
+tokenizer = HubTokenizer.from_pretrained(model_name)
+model = HubModel.from_pretrained(model_name)
 
 def main():
     # Create pipeline
@@ -55,26 +57,32 @@ def main():
                 image_data = cv2.imencode(".jpg", frame)[1].tobytes()
 
                 image = Image.open(image_data)
-
-                # Convert the image to PyTorch tensor and normalize it
-                transform = torchvision.transforms.Compose([
-                    torchvision.transforms.ToTensor(),
-                    torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                
+                # Perform necessary preprocessing on the image
+                transform = transforms.Compose([
+                    transforms.ToPILImage(),
+                    transforms.Resize((224, 224)),  # ResNet-152 requires 224x224 input
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                 ])
+                
+                # Convert the image to a PyTorch tensor and normalize it
                 image_tensor = transform(image).unsqueeze(0)
 
-                # Set the model to evaluation mode
-                model.eval()
-
-                # Generate captions for the image
                 with torch.no_grad():
-                    captions = model.caption_image(image_tensor)
+                    outputs = model.generate(input_ids=image_tensor)
+                caption_indices = outputs[0].tolist()
 
-                # Print the generated captions
-                for caption in captions:
-                    print(caption)
-                # # Print the caption to the terminal
-                # print("Predicted Caption: ", caption)
+                # Decode the caption indices back to text using the tokenizer
+                caption_text = tokenizer.decode(caption_indices, skip_special_tokens=True)
+
+                # Print the predicted output
+                print("Predicted Caption: ", caption_text)
+                # Speak the text
+                engine.say(caption_text)
+
+                # Wait for the speech to finish
+                engine.runAndWait()
 
                 # Save the image
                 timestamp = int(time.time())
@@ -87,4 +95,4 @@ def main():
                 break
 
 if __name__ == "__main__":
-    main()
+    ca()

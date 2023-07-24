@@ -6,6 +6,14 @@ import depthai as dai
 import numpy as np
 import time
 import argparse
+import pyttsx3
+
+# Initialize the TTS engine
+engine = pyttsx3.init()
+
+# Set properties (optional)
+engine.setProperty('rate', 150)  # Speed of speech
+engine.setProperty('volume', 0.9)  # Volume level (0.0 to 1.0)
 
 labelMap = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow",
             "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
@@ -89,6 +97,9 @@ spatialDetectionNetwork.passthrough.link(objectTracker.inputDetectionFrame)
 spatialDetectionNetwork.out.link(objectTracker.inputDetections)
 stereo.depth.link(spatialDetectionNetwork.inputDepth)
 
+#Text to be spoken
+text="Caution"
+
 # Connect to device and start pipeline
 with dai.Device(pipeline) as device:
 
@@ -135,7 +146,11 @@ with dai.Device(pipeline) as device:
             cv2.putText(frame, f"Z: {int(t.spatialCoordinates.z)} mm", (x1 + 10, y1 + 95), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
 
             if int(t.spatialCoordinates.z)<2000:
-                print("Caution!!!!!")
+                # Speak the text
+                engine.say(text)
+
+                # Wait for the speech to finish
+                engine.runAndWait()
 
         cv2.putText(frame, "NN fps: {:.2f}".format(fps), (2, frame.shape[0] - 4), cv2.FONT_HERSHEY_TRIPLEX, 0.4, color)
 
