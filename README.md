@@ -12,3 +12,12 @@ The Oak-D camera serves as the core hardware component of eyeQ. This powerful ca
 To get started with eyeQ, follow these simple installation instructions:
 
 1. Clone the depthai repository from Luxonis:
+```
+git clone https://github.com/luxonis/depthai.git
+cd depthai
+python install_requirements.py
+```
+2. Install the required packages using the provided script:
+```
+pip install -r requirements.txt
+```
