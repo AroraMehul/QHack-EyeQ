@@ -5,9 +5,9 @@ from roboticstoolbox import DistanceTransformPlanner
 
 test_pc = np.load("data.npy")
 
-resolution = 0.08
-height_min = -1.1
-height_max = 0.6
+resolution = 0.2
+height_min = 0.5
+height_max = 2
 
 
 def pcd_to_occupancy(pcd: np.ndarray):
@@ -17,22 +17,22 @@ def pcd_to_occupancy(pcd: np.ndarray):
     x_min = pcd[:, 0].min()
     x_max = pcd[:, 0].max()
 
-    z_min = pcd[:, 2].min()
-    z_max = pcd[:, 2].max()
+    z_min = pcd[:, 1].min()
+    z_max = pcd[:, 1].max()
 
 
     occupancy = np.zeros((int((x_max - x_min + 1) / resolution), int((z_max - z_min + 1)/ resolution)) , dtype=np.float64)
 
     for i in range(pcd.shape[0]):
-        if pcd[i, 1] < height_min or pcd[i, 1] > height_max:
+        if pcd[i, 2] < height_min or pcd[i, 2] > height_max:
             continue
         x = int((pcd[i, 0] - x_min) / resolution)
-        z = int((pcd[i, 2] - z_min) / resolution)
+        z = int((pcd[i, 1] - z_min) / resolution)
 
         occupancy[x, z] += 1
 
     # occupancy /= pcd.shape[0]
-    print(pcd[:,1].max(), pcd[:,1].min())
+    print(pcd[:,2].max(), pcd[:,2].min())
     return occupancy > 0
 
 def plan(start, goal, occupancy):
@@ -47,12 +47,8 @@ def plan(start, goal, occupancy):
 
 
 # example code
- 
-pcd = o3d.io.read_point_cloud("finalPCD.pcd")
-points = np.asarray(pcd.points)
-print(points.shape)
-occupancy = pcd_to_occupancy(points)
-plan_output = plan(start = (100, 70), goal=(40, 10), occupancy = occupancy)
+# occupancy = pcd_to_occupancy(test_pc[:,:3])
+# plan_output = plan(start = (7.5,10), goal=(25, 10), occupancy = occupancy)
 
 
 

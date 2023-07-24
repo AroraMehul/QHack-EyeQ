@@ -1,3 +1,4 @@
+# TODO
 # eyeQ - Your Visionary Assistant
 
 
@@ -21,3 +22,18 @@ python install_requirements.py
 ```
 pip install -r requirements.txt
 ```
+
+1. Plot for trajectory
+2. Make flowchart for pipeline
+3. PPT finish
+    - add photos of prototype
+    - add demo videos
+    - add depth images
+    - add image of reconstructed room
+    - add trajectory/path planning generated for lookup
+4. Video record
+5. Add Depth Video
+6. Make report
+7. Refactor code
+8. Modify code to be authentic
+9. make script for video

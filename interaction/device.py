@@ -1,19 +1,24 @@
-# import pyttsx3
-import speech_recognition as sr
-import datetime
-import time
-import mac_say
+"""
+Script to control interation with the user
+"""
 
+import time
+import speech_recognition as sr
+import pyttsx3
+from navigation.occupancy_planning import plan
+from navigation.occupancy_planning import get_current_coord, save_coord
 
 def speak(audio):
-    mac_say.say([audio,'-v','Samantha'])
-    # mac_say.gtts.say("en",audio)
-    # print(mac_say.voices("en"))
-    # engine.say(audio)
-    # engine.runAndWait()
+    """
+    Text to Speech output
+    """
+    engine.say(audio)
+    engine.runAndWait()
 
 def takeCommand():
-
+    """
+    Takes user voice command
+    """
     r = sr.Recognizer()
     m = sr.Microphone()
     with m as source:
@@ -27,8 +32,8 @@ def takeCommand():
         query = r.recognize_google(audio, language ='en')
         print(f"User said: {query}\n")
 
-    except Exception as e:
-        print(e)
+    except Exception as error:
+        print(error)
         print("Unable to Recognize your voice.")
         return "None"
 
@@ -40,18 +45,18 @@ primary_cmds = ['Remember this',
                 'Look for an object',
                 'Describe the surrouding']
 
-# engine = pyttsx3.init('sapi5')
-# engine = pyttsx3.init()
-# voices = engine.getProperty('voices')
-# engine.setProperty('voice', voices[1].id)
-
-
 if __name__ == '__main__':
-    while True:
+    engine = pyttsx3.init() # object creation
+    engine.setProperty('rate', 125)     # setting up new voice rate
+    engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
 
+    while True:
+        # Event loop
         query = takeCommand().lower()
-        if "IQ" in query or 'queue' in query or 'hello' in query:
-            speak("How may i help you")
+        if "eyeQ" in query or 'hello' in query:
+            speak("How may i help you?")
 
         elif 'navigation' in query or 'start' in query:
             speak("Starting camera and mapping")
@@ -59,12 +64,16 @@ if __name__ == '__main__':
         elif "remember" in query or 'object' in query:
             speak("please name this object")
             obj_name = takeCommand()
+            curr_coord = get_current_coord()
+            save_coord(curr_coord)
             speak(f'{obj_name} is saved at this location')
 
-        elif 'where is' in query:
+        elif 'where is' in query or 'look for':
             query = query.replace('where is', '')
+            query = query.replace('look for', '')
             speak(f"Looking for {query}")
             # table
+            
             time.sleep(1)
             speak(f"Found {query} about one meters straight and slight right from your current location")
 
