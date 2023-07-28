@@ -1,5 +1,6 @@
-# EyeQ - Your Visionary Assistant [![Video]]([https://youtu.be/vt5fpE0bzSY](https://drive.google.com/drive/folders/1eDt5B2PXtkSEozZbn4_z8ZvQchQJQNn8))
+# EyeQ - Your Visionary Assistant
 
+https://github.com/AroraMehul/QHack-EyeQ/assets/31012538/d2dc7f18-fe79-44d7-add5-a7c63ebe5f66
 
 eyeQ is an innovative device that aims to empower visually impaired individuals with a comprehensive set of functionalities, enabling them to navigate their surroundings independently and access information effortlessly. Leveraging the power of the Oak-D camera, eyeQ utilizes cutting-edge hardware and software capabilities, including the IMU and depth cameras, to provide an enhanced and inclusive user experience.
 
